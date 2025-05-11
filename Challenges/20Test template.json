@@ -1,0 +1,32 @@
+{
+  "questions": [
+    {
+      "text": "Socrates was Plato's teacher.",
+      "answer": true
+    },
+    {
+      "text": "Socrates left behind important philosophical writings.",
+      "answer": false
+    },
+    {
+      "text": "Socrates was sentenced to death for corrupting the youth and impiety.",
+      "answer": true
+    },
+    {
+      "text": "Socrates was born in Athens in the 5th century BCE.",
+      "answer": true
+    },
+    {
+      "text": "Socrates believed that wisdom consisted in recognizing one's own ignorance.",
+      "answer": true
+    },
+    {
+      "text": "The Oracle of Delphi declared Socrates the wisest man in Athens.",
+      "answer": true
+    },
+    {
+      "text": "The main source of knowledge about Socrates comes from the dialogues written by Aristotle.",
+      "answer": false
+    }
+  ]
+}

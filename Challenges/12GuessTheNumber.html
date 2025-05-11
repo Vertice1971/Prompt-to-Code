@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guess the Number</title>
+  <style>
+    :root {
+      --bg: #f0f0f0;
+      --card: #fff;
+      --primary: #4a90e2;
+      --text: #333;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1em;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 0.5rem;
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h1 {
+      margin-top: 0;
+      color: var(--primary);
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 0.75em;
+      margin: 0.5em 0;
+      border: 1px solid #ccc;
+      border-radius: 0.25rem;
+      font-size: 1rem;
+    }
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.75em 1.5em;
+      font-size: 1rem;
+      border-radius: 0.25rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0.5em;
+    }
+    button:hover {
+      background: #357abd;
+    }
+    #result {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+    #counter {
+      margin-top: 0.5em;
+      color: #666;
+    }
+    .hidden {
+      display: none;
+    }
+    footer {
+      margin-top: 2em;
+      font-size: 0.8em;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Author: Thomas Hills | tomcue@iesjuandelacierva.com -->
+
+<div class="card">
+
+  <h1>Guess the Number</h1>
+
+  <div id="modeMenu">
+    <p>Select a game mode:</p>
+    <button onclick="selectMode('easy')">Easy Mode</button>
+    <button onclick="selectMode('hard')">Hard Mode</button>
+  </div>
+
+  <div id="settings" class="hidden">
+    <p>Choose a number from 1 to 100 and how many attempts you want:</p>
+    <label for="attempts">Attempts (1–10):</label>
+    <input type="number" id="attempts" min="1" max="10" value="5"/>
+    <button id="btnStart">Start Game</button>
+  </div>
+
+  <div id="gameArea" class="hidden">
+    <p>Enter your number:</p>
+    <input type="number" id="input" min="1" max="100"/>
+    <button id="btnTry">Try</button>
+    <div id="result"></div>
+    <div id="counter"></div>
+    <button id="btnRestart" class="hidden">Back to Menu</button>
+  </div>
+
+  <footer>Thomas Hills</footer>
+</div>
+
+<audio id="soundCorrect" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+<audio id="soundWrong" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+
+<script>
+(() => {
+  let secret, maxAttempts, used, prevDiff, ended, mode;
+
+  const modeMenu      = document.getElementById('modeMenu');
+  const settings      = document.getElementById('settings');
+  const gameArea      = document.getElementById('gameArea');
+  const btnStart      = document.getElementById('btnStart');
+  const btnTry        = document.getElementById('btnTry');
+  const btnRestart    = document.getElementById('btnRestart');
+  const result        = document.getElementById('result');
+  const counter       = document.getElementById('counter');
+  const input         = document.getElementById('input');
+  const inputAttempts = document.getElementById('attempts');
+  const soundOk       = document.getElementById('soundCorrect');
+  const soundErr      = document.getElementById('soundWrong');
+
+  window.selectMode = function(type) {
+    mode = type;
+    modeMenu.classList.add('hidden');
+    settings.classList.remove('hidden');
+  }
+
+  btnStart.addEventListener('click', () => {
+    secret      = Math.floor(Math.random() * 100) + 1;
+    maxAttempts = +inputAttempts.value;
+    used        = 0;
+    prevDiff    = null;
+    ended       = false;
+
+    result.textContent = '';
+    counter.textContent = `Attempt 1 of ${maxAttempts}`;
+    input.value = '';
+    gameArea.classList.remove('hidden');
+    settings.classList.add('hidden');
+
+    inputAttempts.disabled = true;
+    btnStart.disabled = true;
+    btnTry.disabled = false;
+    btnRestart.classList.add('hidden');
+  });
+
+  btnTry.addEventListener('click', () => {
+    if (ended) return;
+
+    const val = parseInt(input.value, 10);
+    if (!val || val < 1 || val > 100) {
+      result.textContent = 'Enter a valid number between 1 and 100.';
+      return;
+    }
+
+    used++;
+    let msg = '';
+
+    if (val === secret) {
+      msg = `Correct! It was ${secret}. You guessed it in ${used} attempt(s).`;
+      soundOk.play();
+      endGame();
+    } else {
+      soundErr.play();
+
+      if (mode === 'easy') {
+        msg = val < secret ? 'The number is higher.' : 'The number is lower.';
+      } else if (mode === 'hard') {
+        const diff = Math.abs(val - secret);
+        if (used === 1) {
+          msg = val < secret ? 'Higher.' : 'Lower.';
+        } else {
+          msg = diff < prevDiff ? 'You’re getting closer than last time!' :
+                diff > prevDiff ? 'You’re further than last time.' :
+                'Same distance as before.';
+        }
+        prevDiff = diff;
+      }
+    }
+
+    result.textContent = msg;
+
+    if (!ended && used >= maxAttempts) {
+      result.textContent += ` You lost. The number was ${secret}.`;
+      soundErr.play();
+      endGame();
+    }
+
+    if (!ended) {
+      counter.textContent = `Attempt ${used + 1} of ${maxAttempts}`;
+    }
+  });
+
+  btnRestart.addEventListener('click', () => {
+    gameArea.classList.add('hidden');
+    modeMenu.classList.remove('hidden');
+    settings.classList.add('hidden');
+
+    inputAttempts.disabled = false;
+    btnStart.disabled = false;
+    result.textContent = '';
+    counter.textContent = '';
+    input.value = '';
+  });
+
+  function endGame() {
+    ended = true;
+    btnTry.disabled = true;
+    counter.textContent = 'Game over.';
+    btnRestart.classList.remove('hidden');
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Multiple Choice Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      text-align: center;
+      background-color: #f5f8ff;
+    }
+    .header-info {
+      font-size: 0.9em;
+      color: #555;
+      margin-bottom: 5px;
+      line-height: 1.2;
+    }
+    .question-container {
+      display: none;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .option {
+      display: block;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .option:hover {
+      background: #e0ebff;
+      transform: scale(1.05);
+    }
+    .correct {
+      background: #c8e6c9;
+      border-color: green;
+    }
+    .incorrect {
+      background: #ffcdd2;
+      border-color: red;
+    }
+    #start-btn, #restart-btn {
+      display: none;
+      margin-top: 20px;
+      padding: 10px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    #restart-btn {
+      background: #28a745;
+    }
+    #next-btn {
+      position: fixed;
+      right: 20px;
+      top: 30%;
+      padding: 10px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      display: none;
+    }
+    #info-container {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-info">
+    <div>Thomas Hills</div>
+    <div>High School Education</div>
+  </div>
+
+  <h1>Multiple Choice Quiz</h1>
+
+  <label for="file-input">Select JSON file:</label>
+  <input type="file" id="file-input" accept=".json" />
+
+  <div id="info-container"></div>
+  <button id="start-btn">Start Quiz</button>
+
+  <div id="quiz-container" class="question-container"></div>
+  <button id="next-btn">Next</button>
+  <button id="restart-btn">Restart</button>
+
+  <script>
+    // Data and references
+    let questions = [];
+    let selectedQuestions = [];
+    let currentIndex = 0;
+    let correctCount = 0;
+    let score = 0; // cumulative score
+
+    const quizContainer = document.getElementById('quiz-container');
+    const nextButton   = document.getElementById('next-btn');
+    const restartButton= document.getElementById('restart-btn');
+    const startButton  = document.getElementById('start-btn');
+    const infoContainer= document.getElementById('info-container');
+    const fileInput    = document.getElementById('file-input');
+
+    // Fisher–Yates shuffle
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Load JSON file
+    fileInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!data.questions || !Array.isArray(data.questions)) {
+            throw new Error('Invalid JSON format.');
+          }
+          questions = data.questions;
+          infoContainer.innerHTML = `<p>The file contains <strong>${questions.length}</strong> questions. You can choose how many to answer.</p>`;
+          startButton.style.display = 'block';
+          fileInput.disabled = true;
+        } catch (err) {
+          alert('Error reading JSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // Start the quiz
+    startButton.addEventListener('click', function() {
+      let num = prompt(`This quiz has ${questions.length} questions. How many would you like to answer?`, questions.length);
+      num = parseInt(num);
+      if (isNaN(num) || num < 1 || num > questions.length) {
+        alert('Invalid number. All questions will be used.');
+        num = questions.length;
+      }
+      selectedQuestions = shuffle([...questions]).slice(0, num);
+      currentIndex = 0;
+      correctCount = 0;
+      score = 0;
+      startButton.style.display = 'none';
+      infoContainer.innerHTML = '';
+      showQuestion();
+    });
+
+    // Show question or final results
+    function showQuestion() {
+      if (currentIndex < selectedQuestions.length) {
+        quizContainer.innerHTML = '';
+        quizContainer.style.display = 'block';
+        nextButton.style.display = 'none';
+
+        const q = selectedQuestions[currentIndex];
+        const title = document.createElement('h2');
+        title.textContent = q.text;
+        quizContainer.appendChild(title);
+
+        // Shuffle options
+        let optionsArray = Object.entries(q.options)
+          .map(([key, text]) => ({ key, text }));
+        optionsArray = shuffle(optionsArray);
+
+        optionsArray.forEach(opt => {
+          const div = document.createElement('div');
+          div.classList.add('option');
+          div.textContent = opt.text;
+          div.dataset.value = opt.key;
+          div.addEventListener('click', () => validateAnswer(div, q.answer));
+          quizContainer.appendChild(div);
+        });
+
+      } else {
+        // Calculate final grade out of 10
+        const finalGrade = Math.max(0, score).toFixed(1);
+        quizContainer.innerHTML = `
+          <h2>Quiz Complete!</h2>
+          <p>You answered ${correctCount} of ${selectedQuestions.length} correctly.</p>
+          <p><strong>Grade: ${finalGrade} / 10</strong></p>
+        `;
+        nextButton.style.display = 'none';
+        restartButton.style.display = 'block';
+      }
+    }
+
+    // Validate answer and update score
+    function validateAnswer(elem, correctAnswer) {
+      const allOptions = document.querySelectorAll('.option');
+      allOptions.forEach(o => o.style.pointerEvents = 'none');
+
+      // Each question worth 10 points total
+      const value = 10 / selectedQuestions.length;
+      const numOptions = allOptions.length;
+      const penalty = value / (numOptions - 1);
+
+      if (elem.dataset.value === correctAnswer) {
+        elem.classList.add('correct');
+        correctCount++;
+        score += value;
+      } else {
+        elem.classList.add('incorrect');
+        const correctElem = document.querySelector(`.option[data-value='${correctAnswer}']`);
+        if (correctElem) correctElem.classList.add('correct');
+        score -= penalty;
+      }
+      nextButton.style.display = 'block';
+    }
+
+    // Next question
+    nextButton.addEventListener('click', function() {
+      currentIndex++;
+      showQuestion();
+    });
+
+    // Restart quiz
+    restartButton.addEventListener('click', function() {
+      restartButton.style.display = 'none';
+      startButton.style.display = 'none';
+      currentIndex = 0;
+      correctCount = 0;
+      score = 0;
+      infoContainer.innerHTML = `<p>The file contains <strong>${questions.length}</strong> questions. You can choose how many to answer.</p>`;
+      startButton.style.display = 'block';
+      quizContainer.innerHTML = '';
+      quizContainer.style.display = 'none';
+      fileInput.disabled = false;
+      fileInput.value = '';
+    });
+  </script>
+</body>
+</html>
