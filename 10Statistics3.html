@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Statistics for 10th Grade</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 900px;
+      margin: 2em auto;
+      padding: 1em;
+      background-color: #f4f4f4;
+      border-radius: 10px;
+      position: relative;
+      padding-bottom: 3em; /* space for the footer */
+    }
+    label, input, button {
+      display: block;
+      margin: 0.5em 0;
+    }
+    .screen {
+      display: none;
+    }
+    .visible {
+      display: block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      text-align: center;
+    }
+    th {
+      background-color: #eee;
+    }
+    .mode {
+      background-color: #ffeb3b;
+      font-weight: bold;
+    }
+    .table-buttons {
+      margin-top: 1em;
+    }
+    #mean-value {
+      margin-top: 0.5em;
+      font-weight: bold;
+      font-size: 1.1em;
+      white-space: pre-line;
+    }
+    .total-row td {
+      font-weight: bold;
+      background-color: #e0f7fa;
+    }
+    #median-series, #quartile-series {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      margin: 1em 0;
+    }
+    .die-face {
+      text-align: center;
+      min-width: 50px;
+      padding: 0.5em;
+    }
+    .die-symbol {
+      font-size: 2em;
+    }
+    .highlight {
+      border: 2px solid red;
+      border-radius: 5px;
+    }
+    .highlight-q1 {
+      border: 2px solid blue;
+      border-radius: 5px;
+    }
+    .highlight-q3 {
+      border: 2px solid green;
+      border-radius: 5px;
+    }
+    .highlight-percentile {
+      border: 2px dashed purple;
+      border-radius: 5px;
+    }
+    /* Footer always visible */
+    #footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 0.8em;
+      color: #555;
+      background: rgba(244,244,244,0.8);
+      padding: 0.5em 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Start screen -->
+  <div id="screen-start" class="screen visible">
+    <h1>Statistics for 10th Grade</h1>
+    <label for="faces">Number of die faces:</label>
+    <input type="number" id="faces" min="2" value="6">
+    <label for="rolls">Number of rolls:</label>
+    <input type="number" id="rolls" min="1" value="100">
+    <button onclick="simulate()">Roll Die</button>
+    <div id="results"></div>
+    <button id="viewTableBtn" style="display:none;" onclick="showTable()">View Frequency Table</button>
+  </div>
+
+  <!-- Frequency table screen -->
+  <div id="screen-table" class="screen">
+    <h2>Frequency Table</h2>
+    <div class="table-buttons">
+      <button onclick="toggleMode()">Show Mode</button>
+      <button onclick="toggleMean()">Show Mean</button>
+      <button onclick="toggleVariance()">Show Variance & Std. Dev.</button>
+      <button onclick="toggleCoefVariation()">Show Coefficient of Variation</button>
+      <button onclick="showMedian()">Show Median</button>
+      <button onclick="showQuartiles()">Show Quartiles & Percentiles</button>
+      <div id="mean-value"></div>
+    </div>
+    <div id="frequency-table"></div>
+    <button onclick="goBack()">Back to Simulation</button>
+  </div>
+
+  <!-- Median screen -->
+  <div id="screen-median" class="screen">
+    <h2>Cumulative Frequency Distribution</h2>
+    <div id="median-series"></div>
+    <button onclick="identifyMedian()">Identify Median</button>
+    <div id="median-info" style="margin-top:1em; font-weight:bold;"></div>
+    <button onclick="backToTable()">Back to Frequency Table</button>
+  </div>
+
+  <!-- Quartiles & percentiles screen -->
+  <div id="screen-quartiles" class="screen">
+    <h2>Quartiles & Percentiles</h2>
+    <div id="quartile-series"></div>
+    <button onclick="identifyQuartiles()">Calculate Q1, Q2, Q3</button>
+    <label for="percentile">Enter percentile (1–99):</label>
+    <input type="number" id="percentile" min="1" max="99" value="30">
+    <button onclick="calculatePercentile()">Calculate Percentile</button>
+    <div id="quartile-info" style="margin-top:1em; font-weight:bold;"></div>
+    <div id="percentile-info" style="margin-top:1em;"></div>
+    <button onclick="backToTableFromQuartiles()">Back to Frequency Table</button>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer">
+    Thomas Hills<br>
+   Prompt to Code
+  </div>
+
+  <script>
+    // Global variables
+    let savedData = [];
+    let stats = {};
+    let modeVisible = false;
+    let meanVisible = false;
+    let varianceVisible = false;
+    let coefVariationVisible = false;
+
+    // PRNG xoshiro128**
+    function splitMix32(seed) {
+      let h = seed >>> 0;
+      return function() {
+        h += 0x9e3779b9;
+        let t = h;
+        t = Math.imul(t ^ (t >>> 16), 0x85ebca6b);
+        t = Math.imul(t ^ (t >>> 13), 0xc2b2ae35);
+        return (t ^ (t >>> 16)) >>> 0;
+      };
+    }
+    function xoshiro128ss(seedStr) {
+      let seed = 0;
+      for (let i = 0; i < seedStr.length; i++) {
+        seed = (seed * 31 + seedStr.charCodeAt(i)) >>> 0;
+      }
+      const sm = splitMix32(seed);
+      let s = [sm(), sm(), sm(), sm()];
+      function rotl(x, k) { return (x << k) | (x >>> (32 - k)); }
+      return function() {
+        const result = rotl(s[1] * 5, 7) * 9;
+        const t = s[1] << 9;
+        s[2] ^= s[0];
+        s[3] ^= s[1];
+        s[1] ^= s[2];
+        s[0] ^= s[3];
+        s[2] ^= t;
+        s[3] = rotl(s[3], 11);
+        return (result >>> 0) / 2**32;
+      };
+    }
+
+    // Roll simulation
+    function simulate() {
+      const faces = parseInt(document.getElementById('faces').value);
+      const rolls = parseInt(document.getElementById('rolls').value);
+      if (isNaN(faces) || isNaN(rolls) || faces < 2 || rolls < 1) {
+        alert("Please enter valid values (min 2 faces and 1 roll).");
+        return;
+      }
+      const seed = (Date.now() + Math.random()).toString();
+      const rng = xoshiro128ss(seed);
+      const results = [];
+      for (let i = 0; i < rolls; i++) {
+        results.push(Math.floor(rng() * faces) + 1);
+      }
+      savedData = results;
+      calculateStats(faces, results);
+      showResults(results);
+    }
+
+    // Calculate frequencies and stats
+    function calculateStats(faces, data) {
+      const N = data.length;
+      const absFreq = Array(faces).fill(0);
+      data.forEach(v => absFreq[v - 1]++);
+      let acc = 0;
+      const cumFreq = absFreq.map(f => (acc += f, acc));
+      const relFreq = absFreq.map(f => f / N);
+      const cumRelFreq = relFreq.reduce((arr, h, i) => {
+        if (i === 0) arr.push(h);
+        else arr.push(arr[i - 1] + h);
+        return arr;
+      }, []);
+      stats = {
+        absFreq,
+        cumFreq,
+        relFreq,
+        cumRelFreq,
+        total: N
+      };
+    }
+
+    // Display roll results
+    function showResults(res) {
+      document.getElementById('results').innerHTML =
+        `<h2>Results:</h2><p>${res.join(', ')}</p>`;
+      document.getElementById('viewTableBtn').style.display = 'block';
+    }
+
+    // Screen navigation
+    function showTable() {
+      modeVisible = meanVisible = varianceVisible = coefVariationVisible = false;
+      document.getElementById('mean-value').innerText = '';
+      generateTable();
+      document.getElementById('screen-start').classList.remove('visible');
+      document.getElementById('screen-table').classList.add('visible');
+    }
+    function goBack() {
+      document.getElementById('screen-table').classList.remove('visible');
+      document.getElementById('screen-start').classList.add('visible');
+    }
+
+    // Build frequency table
+    function generateTable() {
+      const { absFreq: f, cumFreq: F, relFreq: h, cumRelFreq: H, total: N } = stats;
+      const maxMode = Math.max(...f);
+      let sumXiFi = 0, sumFiXi2 = 0;
+      let html = `<table><thead><tr>
+        <th>Face</th><th>fi</th><th>Fi</th><th>hi</th><th>Hi</th>
+        ${meanVisible ? '<th>xi·fi</th>' : ''}
+        ${varianceVisible ? '<th>xi²</th><th>fi·xi²</th>' : ''}
+      </tr></thead><tbody>`;
+      for (let i = 0; i < f.length; i++) {
+        const xi = i + 1, fi = f[i], hiVal = h[i], HiVal = H[i];
+        const xiFi = xi * fi, xi2 = xi * xi, fiXi2 = fi * xi2;
+        sumXiFi += xiFi; sumFiXi2 += fiXi2;
+        const modeClass = (modeVisible && fi === maxMode) ? 'mode' : '';
+        html += `<tr>
+          <td>${xi}</td>
+          <td class="${modeClass}">${fi}</td>
+          <td>${F[i]}</td>
+          <td>${hiVal.toFixed(4)}</td>
+          <td>${HiVal.toFixed(4)}</td>
+          ${meanVisible ? `<td>${xiFi}</td>` : ''}
+          ${varianceVisible ? `<td>${xi2}</td><td>${fiXi2}</td>` : ''}
+        </tr>`;
+      }
+      if (meanVisible) {
+        html += `<tr class="total-row"><td colspan="${5 + (varianceVisible ? 2 : 0)}" style="text-align:right;">∑(xi·fi)</td><td>${sumXiFi}</td></tr>`;
+      }
+      if (varianceVisible) {
+        html += `<tr class="total-row"><td colspan="${5 + (meanVisible ? 1 : 0)}" style="text-align:right;">∑(fi·xi²)</td><td>${sumFiXi2}</td></tr>`;
+      }
+      html += `</tbody></table>`;
+      document.getElementById('frequency-table').innerHTML = html;
+
+      // Numeric summaries
+      let info = '';
+      const mean = sumXiFi / N;
+      if (meanVisible) info += `x̄ = ${mean.toFixed(4)}\n`;
+      if (varianceVisible) {
+        const varz = (sumFiXi2 / N) - mean * mean;
+        const sd = Math.sqrt(varz);
+        info += `σ² = ${varz.toFixed(4)}\nσ = ${sd.toFixed(4)}\n`;
+      }
+      if (coefVariationVisible) {
+        const varz = (sumFiXi2 / N) - mean * mean;
+        const sd = Math.sqrt(varz);
+        const cv = (sd / mean) * 100;
+        info += `CV = (σ / x̄) × 100 = ${cv.toFixed(2)}%`;
+      }
+      document.getElementById('mean-value').innerText = info;
+    }
+
+    // Toggles
+    function toggleMode()           { modeVisible = !modeVisible; generateTable(); }
+    function toggleMean()           { meanVisible = !meanVisible; generateTable(); }
+    function toggleVariance()       { varianceVisible = !varianceVisible; generateTable(); }
+    function toggleCoefVariation()  { coefVariationVisible = !coefVariationVisible; generateTable(); }
+
+    // Median screen
+    function showMedian() {
+      document.getElementById('screen-table').classList.remove('visible');
+      document.getElementById('screen-median').classList.add('visible');
+      document.getElementById('median-info').innerText = '';
+      const container = document.getElementById('median-series');
+      container.innerHTML = '';
+      const f = stats.absFreq, F = stats.cumFreq;
+      const symbols = ["⚀","⚁","⚂","⚃","⚄","⚅"];
+      let start = 1;
+      f.forEach((fi, i) => {
+        const end = F[i];
+        const sym = symbols[i] || ("🎲"+(i+1));
+        const div = document.createElement('div');
+        div.className = 'die-face';
+        div.innerHTML = `<div class="die-symbol">${sym}</div><div>${start} – ${end}</div>`;
+        container.appendChild(div);
+        start = end + 1;
+      });
+    }
+    function identifyMedian() {
+      const N = stats.total;
+      const pos = (N % 2 === 0) ? N/2 : (N+1)/2;
+      let face = null;
+      stats.cumFreq.forEach((cum, i) => { if (face===null && cum>=pos) face = i+1; });
+      document.getElementById('median-info').innerText = `Median: position ${pos} → face ${face}`;
+      Array.from(document.getElementById('median-series').children)
+        .forEach((d, i) => d.classList.toggle('highlight', i+1===face));
+    }
+    function backToTable() {
+      document.getElementById('screen-median').classList.remove('visible');
+      document.getElementById('screen-table').classList.add('visible');
+    }
+
+    // Quartiles & percentiles screen
+    function showQuartiles() {
+      document.getElementById('screen-table').classList.remove('visible');
+      document.getElementById('screen-quartiles').classList.add('visible');
+      document.getElementById('quartile-info').innerText = '';
+      document.getElementById('percentile-info').innerText = '';
+      const container = document.getElementById('quartile-series');
+      container.innerHTML = '';
+      const f = stats.absFreq, F = stats.cumFreq;
+      const symbols = ["⚀","⚁","⚂","⚃","⚄","⚅"];
+      let start = 1;
+      f.forEach((fi, i) => {
+        const end = F[i];
+        const sym = symbols[i] || ("🎲"+(i+1));
+        const div = document.createElement('div');
+        div.className = 'die-face';
+        div.setAttribute('data-index', i);
+        div.innerHTML = `<div class="die-symbol">${sym}</div><div>${start} – ${end}</div>`;
+        container.appendChild(div);
+        start = end + 1;
+      });
+    }
+    function identifyQuartiles() {
+      const N = stats.total;
+      const cuts = [N/4, N/2, (3*N)/4];
+      const classes = ['highlight-q1','highlight','highlight-q3'];
+      const names = ['Q1','Q2 (Median)','Q3'];
+      const divs = Array.from(document.getElementById('quartile-series').children);
+      divs.forEach(d => d.classList.remove(...classes, 'highlight-percentile'));
+      let info = '';
+      cuts.forEach((c, j) => {
+        let face = null;
+        stats.cumFreq.forEach((cum, i) => { if (face===null && cum>=c) face = i+1; });
+        info += `${names[j]}: position ${c.toFixed(2)} → face ${face}\n`;
+        if (face!==null) divs[face-1].classList.add(classes[j]);
+      });
+      document.getElementById('quartile-info').innerText = info.trim();
+    }
+    function calculatePercentile() {
+      const k = parseInt(document.getElementById('percentile').value);
+      if (isNaN(k) || k<1 || k>99) { alert('Enter a percentile between 1 and 99.'); return; }
+      const N = stats.total;
+      const pos = (k * N) / 100;
+      const divs = Array.from(document.getElementById('quartile-series').children);
+      divs.forEach(d => d.classList.remove('highlight-percentile'));
+      let face = null;
+      stats.cumFreq.forEach((cum, i) => { if (face===null && cum>=pos) face = i+1; });
+      if (face!==null) {
+        divs[face-1].classList.add('highlight-percentile');
+        document.getElementById('percentile-info').innerText =
+          `P${k}: position ${pos.toFixed(2)} → face ${face}`;
+      }
+    }
+    function backToTableFromQuartiles() {
+      document.getElementById('screen-quartiles').classList.remove('visible');
+      document.getElementById('screen-table').classList.add('visible');
+    }
+  </script>
+</body>
+</html>

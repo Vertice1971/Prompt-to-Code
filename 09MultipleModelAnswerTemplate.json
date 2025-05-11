@@ -1,0 +1,49 @@
+{
+  "questions": [
+    {
+      "text": "What was one of the main causes of the Great Depression?",
+      "options": {
+        "a": "The discovery of oil",
+        "b": "The stock market crash of 1929",
+        "c": "The invention of the telephone"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "Who was the U.S. president during most of World War II?",
+      "options": {
+        "a": "Franklin D. Roosevelt",
+        "b": "John F. Kennedy",
+        "c": "Dwight D. Eisenhower"
+      },
+      "answer": "a"
+    },
+    {
+      "text": "What major event happened in the United States on September 11, 2001?",
+      "options": {
+        "a": "The fall of the Berlin Wall",
+        "b": "The Watergate scandal",
+        "c": "Terrorist attacks on the World Trade Center"
+      },
+      "answer": "c"
+    },
+    {
+      "text": "What was the Civil Rights Movement mainly fighting for?",
+      "options": {
+        "a": "Lower taxes",
+        "b": "Equal rights for African Americans",
+        "c": "Expansion of the military"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "Which U.S. president resigned due to the Watergate scandal?",
+      "options": {
+        "a": "Richard Nixon",
+        "b": "Jimmy Carter",
+        "c": "Lyndon B. Johnson"
+      },
+      "answer": "a"
+    }
+  ]
+}
