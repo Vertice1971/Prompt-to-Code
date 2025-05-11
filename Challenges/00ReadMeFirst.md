@@ -1,7 +1,7 @@
 
 # PROGRAMMING CHALLENGES
 
-This folder contains all the solutions to the challenges from the book *“Learn to Program from Scratch (Really) Using Artificial Intelligence”*.
+This folder contains all the solutions to the challenges from the book *“Prompt to Code: Learn to Program with AI – No Experience Needed”*.
 Read these challenges and instructions first, and after finding your own solutions side by side with your favorite AI, compare them with mine, which are included in this document’s folder.
 
 ---
@@ -70,15 +70,14 @@ You’re going to program a small guessing game with the following features:
 
 ---
 
-### 2 PLUS: DOUBLE EXTRA CHALLENGE – Irregular Verbs in English
+### 2 PLUS: DOUBLE EXTRA CHALLENGE – Irregular Verbs in Spqnish
 
 **Memory game adapted to review irregular verbs:**
 
 * Cards with:
 
   * Infinitive + translation
-  * Past participle in English
-    *Example: `go - ir` ↔ `gone`*
+ 
 
 #### Additional requirements:
 
