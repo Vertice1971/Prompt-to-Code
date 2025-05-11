@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rock, Paper, Scissors</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+      color: #333;
+    }
+
+    .container {
+      text-align: center;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 90%;
+    }
+
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #2980b9;
+    }
+
+    .btn-option {
+      font-size: 1.2rem;
+      padding: 15px 25px;
+      margin: 10px;
+    }
+
+    #result {
+      margin: 20px 0;
+      font-size: 1.2rem;
+      min-height: 60px;
+    }
+
+    #score {
+      font-size: 1.3rem;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    #rounds {
+      padding: 8px;
+      font-size: 1rem;
+      margin: 10px;
+      width: 60px;
+      text-align: center;
+    }
+
+    .selection {
+      font-size: 1.5rem;
+      margin: 10px 0;
+    }
+
+    #final-result {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #e74c3c;
+      margin: 20px 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Round selection screen -->
+    <div id="setup-screen">
+      <h1>Rock, Paper, Scissors</h1>
+      <p>Choose how many rounds you want to play:</p>
+      <input type="number" id="rounds" min="1" max="11" value="3">
+      <button id="start-btn" class="btn">Start Game</button>
+    </div>
+
+    <!-- Main game screen -->
+    <div id="game-screen" class="hidden">
+      <h1>Rock, Paper, Scissors</h1>
+      <div id="round-info">Round 1 of <span id="total-rounds">3</span></div>
+      <div id="score">Player: 0 - Computer: 0</div>
+
+      <p>Choose your move:</p>
+      <div>
+        <button id="rock" class="btn btn-option">✊ Rock</button>
+        <button id="paper" class="btn btn-option">✋ Paper</button>
+        <button id="scissors" class="btn btn-option">✌️ Scissors</button>
+      </div>
+
+      <div class="selection" id="player-selection">Your choice: -</div>
+      <div class="selection" id="computer-selection">Computer: -</div>
+
+      <div id="result"></div>
+      <div id="final-result"></div>
+
+      <button id="restart-btn" class="btn">Restart Game</button>
+    </div>
+  </div>
+
+  <script>
+    // Game variables
+    let playerScore = 0;
+    let computerScore = 0;
+    let currentRound = 1;
+    let totalRounds = 3;
+    let gameActive = false;
+
+    // DOM elements
+    const setupScreen = document.getElementById('setup-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const roundsInput = document.getElementById('rounds');
+    const totalRoundsSpan = document.getElementById('total-rounds');
+    const roundInfo = document.getElementById('round-info');
+    const scoreDisplay = document.getElementById('score');
+    const playerSelectionDisplay = document.getElementById('player-selection');
+    const computerSelectionDisplay = document.getElementById('computer-selection');
+    const resultDisplay = document.getElementById('result');
+    const finalResultDisplay = document.getElementById('final-result');
+    const rockBtn = document.getElementById('rock');
+    const paperBtn = document.getElementById('paper');
+    const scissorsBtn = document.getElementById('scissors');
+
+    // Audio setup with Web Audio API
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      if (type === 'roundWin') {
+        oscillator.frequency.value = 880;
+      } else if (type === 'gameOver') {
+        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.5);
+      }
+
+      oscillator.type = 'sine';
+      gainNode.gain.value = 0.1;
+      oscillator.start();
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      oscillator.stop(audioContext.currentTime + 0.5);
+    }
+
+    function getComputerChoice() {
+      const choices = ['✊ Rock', '✋ Paper', '✌️ Scissors'];
+      const randomIndex = Math.floor(Math.random() * choices.length);
+      return choices[randomIndex];
+    }
+
+    function determineWinner(playerChoice, computerChoice) {
+      if (playerChoice === computerChoice) return 'draw';
+      if (
+        (playerChoice === '✊ Rock' && computerChoice === '✌️ Scissors') ||
+        (playerChoice === '✋ Paper' && computerChoice === '✊ Rock') ||
+        (playerChoice === '✌️ Scissors' && computerChoice === '✋ Paper')
+      ) {
+        return 'player';
+      } else {
+        return 'computer';
+      }
+    }
+
+    function updateScore(winner) {
+      if (winner === 'player') {
+        playerScore++;
+        playSound('roundWin');
+      } else if (winner === 'computer') {
+        computerScore++;
+      }
+      scoreDisplay.textContent = `Player: ${playerScore} - Computer: ${computerScore}`;
+    }
+
+    function endGame() {
+      gameActive = false;
+      let message = '';
+      if (playerScore > computerScore) {
+        message = `You won the game ${playerScore}-${computerScore}! 🎉`;
+      } else if (computerScore > playerScore) {
+        message = `You lost the game ${playerScore}-${computerScore}. 😢`;
+      } else {
+        message = `It's a draw ${playerScore}-${computerScore}. 🤝`;
+      }
+      finalResultDisplay.textContent = message;
+      playSound('gameOver');
+    }
+
+    function playRound(playerChoice) {
+      if (!gameActive) return;
+      const computerChoice = getComputerChoice();
+      const winner = determineWinner(playerChoice, computerChoice);
+
+      playerSelectionDisplay.textContent = `Your choice: ${playerChoice}`;
+      computerSelectionDisplay.textContent = `Computer: ${computerChoice}`;
+
+      if (winner === 'draw') {
+        resultDisplay.textContent = 'It’s a draw!';
+      } else if (winner === 'player') {
+        resultDisplay.textContent = 'You won this round!';
+      } else {
+        resultDisplay.textContent = 'You lost this round.';
+      }
+
+      updateScore(winner);
+      currentRound++;
+
+      if (currentRound <= totalRounds) {
+        roundInfo.textContent = `Round ${currentRound} of ${totalRounds}`;
+      } else {
+        endGame();
+      }
+    }
+
+    function resetGame() {
+      playerScore = 0;
+      computerScore = 0;
+      currentRound = 1;
+      gameActive = true;
+
+      playerSelectionDisplay.textContent = 'Your choice: -';
+      computerSelectionDisplay.textContent = 'Computer: -';
+      resultDisplay.textContent = '';
+      finalResultDisplay.textContent = '';
+      roundInfo.textContent = `Round ${currentRound} of ${totalRounds}`;
+      scoreDisplay.textContent = `Player: ${playerScore} - Computer: ${computerScore}`;
+    }
+
+    function startGame() {
+      totalRounds = parseInt(roundsInput.value);
+      if (isNaN(totalRounds) || totalRounds < 1 || totalRounds > 11) {
+        alert('Please enter a valid number of rounds (1–11)');
+        return;
+      }
+      totalRoundsSpan.textContent = totalRounds;
+      setupScreen.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
+      resetGame();
+    }
+
+    // Events
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', resetGame);
+    rockBtn.addEventListener('click', () => playRound('✊ Rock'));
+    paperBtn.addEventListener('click', () => playRound('✋ Paper'));
+    scissorsBtn.addEventListener('click', () => playRound('✌️ Scissors'));
+    roundsInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        startGame();
+      }
+    });
+  </script>
+</body>
+</html>

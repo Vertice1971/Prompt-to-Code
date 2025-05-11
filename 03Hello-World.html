@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Custom Greeting</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 20%;
+      font-size: 2rem;
+    }
+    .red {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div id="greeting"></div>
+
+  <script>
+    document.getElementById("greeting").innerHTML = "Hello, world";
+
+    setTimeout(() => {
+      let name = prompt("What's your name?");
+      document.getElementById("greeting").innerHTML += "<br><span class='red'>Hello, " + name + "</span>";
+    }, 100); // waits 100 milliseconds before asking the name
+  </script>
+</body>
+</html>

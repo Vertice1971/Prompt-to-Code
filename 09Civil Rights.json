@@ -1,0 +1,184 @@
+{
+  "questions": [
+    {
+      "text": "Which amendment to the U.S. Constitution abolished slavery?",
+      "options": {
+        "a": "13th Amendment",
+        "b": "14th Amendment",
+        "c": "15th Amendment"
+      },
+      "answer": "a"
+    },
+    {
+      "text": "What landmark Supreme Court case declared racial segregation in public schools unconstitutional?",
+      "options": {
+        "a": "Plessy v. Ferguson",
+        "b": "Brown v. Board of Education",
+        "c": "Dred Scott v. Sandford"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "Who delivered the “I Have a Dream” speech in 1963?",
+      "options": {
+        "a": "Malcolm X",
+        "b": "Rosa Parks",
+        "c": "Martin Luther King Jr."
+      },
+      "answer": "c"
+    },
+    {
+      "text": "Which amendment guarantees the right to vote regardless of race or color?",
+      "options": {
+        "a": "14th Amendment",
+        "b": "15th Amendment",
+        "c": "19th Amendment"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "Which civil rights leader refused to give up her bus seat in Montgomery, Alabama?",
+      "options": {
+        "a": "Ida B. Wells",
+        "b": "Rosa Parks",
+        "c": "Harriet Tubman"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "In what year did the March on Washington for Jobs and Freedom take place?",
+      "options": {
+        "a": "1961",
+        "b": "1963",
+        "c": "1965"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "Which law, passed in 1964, outlawed discrimination based on race, color, religion, sex, or national origin?",
+      "options": {
+        "a": "Civil Rights Act",
+        "b": "Voting Rights Act",
+        "c": "Fair Housing Act"
+      },
+      "answer": "a"
+    },
+    {
+      "text": "Which law, passed in 1965, aimed to overcome legal barriers preventing African Americans from voting?",
+      "options": {
+        "a": "Civil Rights Act",
+        "b": "Voting Rights Act",
+        "c": "Education Amendments"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "Which amendment gave women the right to vote?",
+      "options": {
+        "a": "19th Amendment",
+        "b": "18th Amendment",
+        "c": "21st Amendment"
+      },
+      "answer": "a"
+    },
+    {
+      "text": "Who led the Freedom Rides challenging segregation in interstate bus terminals?",
+      "options": {
+        "a": "Stokely Carmichael",
+        "b": "James Meredith",
+        "c": "CORE activists"
+      },
+      "answer": "c"
+    },
+    {
+      "text": "What was the main goal of the sit-in movement of the 1960s?",
+      "options": {
+        "a": "To register voters",
+        "b": "To desegregate lunch counters",
+        "c": "To end poll taxes"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "Which city was the site of a major civil rights campaign led by Martin Luther King Jr. in 1963?",
+      "options": {
+        "a": "Birmingham, Alabama",
+        "b": "Atlanta, Georgia",
+        "c": "Memphis, Tennessee"
+      },
+      "answer": "a"
+    },
+    {
+      "text": "What Supreme Court decision upheld “separate but equal” prior to Brown v. Board?",
+      "options": {
+        "a": "Plessy v. Ferguson",
+        "b": "Marbury v. Madison",
+        "c": "Miranda v. Arizona"
+      },
+      "answer": "a"
+    },
+    {
+      "text": "Which organization was founded by Thurgood Marshall to fight segregation in court?",
+      "options": {
+        "a": "NAACP Legal Defense Fund",
+        "b": "SNCC",
+        "c": "SCLC"
+      },
+      "answer": "a"
+    },
+    {
+      "text": "What does SNCC stand for?",
+      "options": {
+        "a": "Student Nonviolent Coordinating Committee",
+        "b": "Southern Negro Council of Communities",
+        "c": "Society for Nonviolent Change"
+      },
+      "answer": "a"
+    },
+    {
+      "text": "Which event in 1965 highlighted violent opposition to Black voter registration in Selma, Alabama?",
+      "options": {
+        "a": "Freedom Rides",
+        "b": "Bloody Sunday",
+        "c": "Detroit Riots"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "Which amendment guarantees equal protection under the law?",
+      "options": {
+        "a": "13th Amendment",
+        "b": "14th Amendment",
+        "c": "15th Amendment"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "Who was the first African American Supreme Court Justice?",
+      "options": {
+        "a": "Clarence Thomas",
+        "b": "Thurgood Marshall",
+        "c": "Sonia Sotomayor"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "Which movement in the 1960s focused on economic and social equality for all races?",
+      "options": {
+        "a": "Black Power Movement",
+        "b": "Civil Rights Movement",
+        "c": "Labor Movement"
+      },
+      "answer": "b"
+    },
+    {
+      "text": "What landmark legislation, passed in 1968, prohibited discrimination in housing?",
+      "options": {
+        "a": "Civil Rights Act",
+        "b": "Fair Housing Act",
+        "c": "Voting Rights Act"
+      },
+      "answer": "b"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hello, world in several languages</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f4f4;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    pre {
+      background: #222;
+      color: #0f0;
+      padding: 1rem;
+      overflow-x: auto;
+      border-radius: 0.5rem;
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+    button {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #output {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>"Hello, world" in several languages</h1>
+  
+  <section>
+    <h2>Python</h2>
+    <pre>print("Hello, world")</pre>
+  </section>
+
+  <section>
+    <h2>C</h2>
+    <pre>#include &lt;stdio.h&gt;
+int main() {
+    printf("Hello, world\n");
+    return 0;
+}</pre>
+  </section>
+
+  <section>
+    <h2>Java</h2>
+    <pre>public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, world");
+    }
+}</pre>
+  </section>
+
+  <section>
+    <h2>JavaScript (live demo)</h2>
+    <pre>console.log("Hello, world");</pre>
+    <button onclick="document.getElementById('output').textContent = 'Hello, world';">
+      Run
+    </button>
+    <div id="output"></div>
+  </section>
+</body>
+</html>

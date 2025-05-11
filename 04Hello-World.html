@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>“Hello, world” Gallery</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 900px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+      text-align: center;
+    }
+    h1 { color: #333; }
+
+    /* ----- MENU ----- */
+    ul { list-style: none; padding: 0; margin: 2rem 0; }
+    li { margin: 1rem 0; }
+    a {
+      text-decoration: none;
+      background: #1976d2;
+      color: #fff;
+      padding: 0.8rem 1.2rem;
+      border-radius: 0.4rem;
+      display: inline-block;
+      transition: background 0.3s;
+    }
+    a:hover { background: #0d47a1; }
+
+    /* ----- IFRAME CONTAINER ----- */
+    #container {
+      margin-top: 2rem;
+      border: 2px solid #ccc;
+      height: 60vh;
+      max-height: 500px;
+      width: 100%;
+      overflow: hidden;
+    }
+    iframe { width: 100%; height: 100%; border: none; }
+
+    /* ----- BACK BUTTON ----- */
+    #back {
+      display: none;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      color: #1976d2;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>“Hello, world” Gallery</h1>
+
+  <ul id="menu">
+    <li><a href="#" onclick="load(0)">1. Hello, world (simple)</a></li>
+    <li><a href="#" onclick="load(1)">2. Typewriter Hello</a></li>
+    <li><a href="#" onclick="load(2)">3. Multilingual Hello</a></li>
+    <li><a href="#" onclick="load(3)">4. Rainbow Hello</a></li>
+    <li><a href="#" onclick="load(4)">5. Cascading Hello</a></li>
+    <li><a href="#" onclick="load(5)">6. Floating Hello</a></li>
+  </ul>
+
+  <div id="container"></div>
+  <div id="back" onclick="backToMenu()">← Back to menu</div>
+
+  <script>
+    /* ====== SELF-CONTAINED DEMOS ====== */
+    const demos = [
+
+`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>
+body{font-family:sans-serif;text-align:center;margin-top:20%;font-size:3rem}
+</style></head><body>Hello, world</body></html>`,
+
+`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>
+body{font-family:monospace;font-size:2rem;text-align:center;margin-top:20%}
+</style></head><body><div id="txt"></div><script>
+const t="Hello, world";let i=0;const int=setInterval(()=>{txt.textContent+=t[i++];if(i===t.length)clearInterval(int)},200);
+<\/script></body></html>`,
+
+`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>
+body{font-family:sans-serif;text-align:center;margin-top:20%;font-size:2rem}
+button{padding:0.6rem 1rem;font-size:1rem}
+</style></head><body><div id="greeting">Hello, world</div><button onclick="change()">Change language</button><script>
+const arr=["Hello, world","Hola, mundo","Bonjour, le monde","Hallo, Welt","Ciao, mondo"];let i=0;
+function change(){i=(i+1)%arr.length;greeting.textContent=arr[i];}
+<\/script></body></html>`,
+
+`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>
+body{text-align:center;margin-top:20%;font-size:3rem;font-family:sans-serif}
+</style></head><body><div id="s">Hello, world</div><script>
+const c=["red","green","blue","purple","orange"];let i=0;
+setInterval(()=>{s.style.color=c[i];i=(i+1)%c.length;},1000);
+<\/script></body></html>`,
+
+`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>
+body{font-family:sans-serif;font-size:1.5rem;text-align:center;padding-top:2rem}
+</style></head><body><div id="c"></div><script>
+setInterval(()=>{const d=document.createElement("div");d.textContent="Hello, world";c.appendChild(d);},2000);
+<\/script></body></html>`,
+
+`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><style>
+body{margin:0;height:100vh;overflow:hidden;background:#f0f0f0}
+#s{position:absolute;font-size:2rem;font-family:sans-serif;color:crimson;pointer-events:none}
+</style></head><body><div id="s">Hello, world</div><script>
+const s=document.getElementById("s");document.addEventListener("mousemove",e=>{s.style.left=e.pageX+"px";s.style.top=e.pageY+"px";});
+<\/script></body></html>`
+    ];
+
+    /* ====== FUNCTIONS ====== */
+    function load(idx){
+      const cont = document.getElementById("container");
+      cont.innerHTML = "";
+      const frame = document.createElement("iframe");
+      frame.srcdoc = demos[idx];
+      cont.appendChild(frame);
+
+      document.getElementById("menu").style.display = "none";
+      document.getElementById("back").style.display = "block";
+    }
+
+    function backToMenu(){
+      document.getElementById("container").innerHTML = "";
+      document.getElementById("menu").style.display = "block";
+      document.getElementById("back").style.display = "none";
+    }
+  </script>
+</body>
+</html>
