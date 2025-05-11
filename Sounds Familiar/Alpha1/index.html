@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>That Sounds Familiar</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- MAIN MENU -->
+  <div id="menu">
+    <h1>That Sounds Familiar</h1>
+    <button class="menu-button" onclick="showSection('game')">Play</button>
+    <button class="menu-button" onclick="showSection('cutter')">Trim MP3</button>
+  </div>
+
+  <!-- GAME SECTION -->
+  <div id="game" class="section">
+    <!-- The game will be loaded here later -->
+    <h2>Game coming soon...</h2>
+    <button onclick="backToMenu()">Back to menu</button>
+  </div>
+
+  <!-- CUTTER SECTION -->
+  <div id="cutter" class="section cutter">
+    <h2>MP3 Cutter</h2>
+    <div class="field">
+      <label for="fileInput">MP3 File:</label>
+      <input type="file" id="fileInput" accept="audio/mpeg" />
+    </div>
+    <div class="field time-inputs">
+      <div>
+        <label>Start (mm:ss):</label>
+        <input type="number" id="startMin" min="0" value="0" />
+        <span>:</span>
+        <input type="number" id="startSec" min="0" max="59" value="0" />
+      </div>
+      <div>
+        <label>End (mm:ss):</label>
+        <input type="number" id="endMin" min="0" value="0" />
+        <span>:</span>
+        <input type="number" id="endSec" min="0" max="59" value="0" />
+      </div>
+    </div>
+    <div class="field">
+      <label for="outputName">Output name:</label>
+      <input type="text" id="outputName" value="cut.mp3" />
+    </div>
+    <button id="cutButton" disabled>Cut</button>
+    <div id="status"></div>
+    <br />
+    <button onclick="backToMenu()">Back to menu</button>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="js/cutter.js"></script>
+  <script>
+    function showSection(id) {
+      document.getElementById('menu').style.display = 'none';
+      document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+      if (id === 'cutter' && typeof startCutter === 'function') {
+        startCutter();
+      }
+    }
+
+    function backToMenu() {
+      document.querySelectorAll('.section').forEach(sec => sec.style.display = 'none');
+      document.getElementById('menu').style.display = 'flex';
+    }
+  </script>
+
+</body>
+</html>

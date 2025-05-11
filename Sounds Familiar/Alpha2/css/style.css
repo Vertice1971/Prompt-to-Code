@@ -1,0 +1,206 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #ccc; /* flat gray, dull */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  color: #fff;
+}
+
+/* Centered main menu */
+#menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100vh;
+}
+
+/* Sections hidden initially */
+.section {
+  display: none;
+  padding: 20px;
+  max-width: 500px;
+  width: 100%;
+}
+
+h1, h2 {
+  text-align: center;
+  color: #ccc;
+  text-shadow: none; /* shadow removed */
+}
+
+/* Main buttons with proper style */
+.menu-button {
+  padding: 12px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  margin: 8px 0;
+  font-weight: bold;
+}
+
+/* Input fields */
+.field {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input[type="file"],
+input[type="number"],
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.time-inputs > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-inputs input[type="number"] {
+  width: 45%;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background: #28a745;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+#status {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.option-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  background-color: #5cb85c; /* same color for all */
+  border: none;
+  border-radius: 6px;
+  margin: 10px 0;
+}
+
+/* no hover/focus effect (error 5) */
+.option-button:hover,
+.option-button:focus {
+  background-color: #5cb85c;
+  transform: none;
+  filter: none;
+}
+
+#timerBarContainer {
+  width: 100%;
+  background-color: #bbb;
+  height: 16px;
+  margin-top: 10px;
+}
+
+#timerBar {
+  height: 100%;
+  width: 100%;
+  background-color: #d9534f;
+  transition: none;
+}
+
+#turnInfo,
+#result,
+#timer,
+#nextNotice,
+#scores p {
+  color: #cccccc; /* dull gray */
+  text-shadow: none;
+  font-weight: normal;
+  text-align: center;
+}
+
+#turnInfo.final-text,
+#result.final-text {
+  font-size: 1.2rem;
+  color: #888;
+  text-shadow: none;
+  font-weight: normal;
+}
+
+.final-score {
+  font-size: 1rem;
+  color: #666;
+  background-color: transparent;
+  font-weight: normal;
+}
+
+body {
+  background-size: cover; /* issue: scales up too much */
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* === Basic responsiveness === */
+@media (max-width: 400px) {
+  .option-button {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  #timerBarContainer {
+    height: 12px;
+  }
+
+  .time-inputs > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .time-inputs input[type="number"] {
+    width: 100%;
+  }
+
+  .menu-button {
+    font-size: 0.95rem;
+    padding: 10px 16px;
+  }
+
+  #menu h1 {
+    font-size: 1.6rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+}
